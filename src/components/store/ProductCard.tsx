@@ -42,7 +42,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       // Generate unique purchase ID
       const purchaseId = generateUniqueId();
 
-      // Check stock again before purchase
+      // Check current stock before purchase
       const { data: currentProduct, error: stockError } = await supabase
         .from('products')
         .select('stock')
@@ -71,7 +71,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         throw purchaseError;
       }
 
-      // Update stock atomically
+      // Update stock by decreasing by 1
       const { error: stockUpdateError } = await supabase
         .from('products')
         .update({ 
@@ -106,6 +106,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       window.open(whatsappUrl, '_blank');
       
       onNotification('success', '🎉 ¡Compra Realizada!', `Tu compra ha sido procesada exitosamente. ID: ${purchaseId}. Serás contactado pronto para la activación.`);
+      
+      // Reload page to show updated stock
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       console.error('Error creating purchase:', error);
       onNotification('error', '❌ Error en la Compra', 'No se pudo procesar la compra. Por favor, inténtalo de nuevo.');
@@ -132,21 +137,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <>
       <div className="bg-card rounded-2xl shadow-xl border border-border overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 flex flex-col h-full">
-        {/* Product Image */}
-        <div className="relative h-48 md:h-56 lg:h-64 flex-shrink-0">
-          {product.image_id ? (
-            <MediaDisplay
-              mediaId={product.image_id}
-              mediaType="image"
-              alt={product.name}
-              className="w-full h-full object-cover"
-              showControls={false}
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center">
-              <Package className="h-16 w-16 text-purple-400" />
-            </div>
-          )}
+        {/* Product Image Container - Fixed Height */}
+        <div className="relative flex-shrink-0">
+          <div className="w-full h-48 md:h-56 lg:h-64 overflow-hidden">
+            {product.image_id ? (
+              <MediaDisplay
+                mediaId={product.image_id}
+                mediaType="image"
+                alt={product.name}
+                className="w-full h-full object-cover"
+                showControls={false}
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center">
+                <Package className="h-16 w-16 text-purple-400" />
+              </div>
+            )}
+          </div>
           
           {/* Stock badge */}
           <div className="absolute top-3 right-3">
@@ -169,7 +176,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
 
-        {/* Product Info */}
+        {/* Product Info - Flexible Content */}
         <div className="p-4 md:p-6 flex flex-col flex-grow">
           <h3 className="text-lg md:text-xl font-bold text-text-primary mb-2 line-clamp-2">
             {product.name}
@@ -189,7 +196,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <span className="text-text-secondary ml-2 text-sm md:text-base">por 30 días</span>
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons - Fixed at bottom */}
           <div className="space-y-2 md:space-y-3 mt-auto">
             {/* Terms and Conditions */}
             {product.terms_conditions && (

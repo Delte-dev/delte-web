@@ -137,6 +137,42 @@ export function useStore() {
           loadData();
         }
       )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'faqs'
+        },
+        () => {
+          console.log('Real-time update: faqs');
+          loadData();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'social_links'
+        },
+        () => {
+          console.log('Real-time update: social_links');
+          loadData();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'site_settings'
+        },
+        () => {
+          console.log('Real-time update: site_settings');
+          loadData();
+        }
+      )
       .subscribe();
 
     return () => {

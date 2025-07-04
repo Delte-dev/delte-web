@@ -145,9 +145,80 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
       setSelectedItem('');
       setFormData({});
       onNotification('success', '✅ ¡Éxito!', 'Datos guardados correctamente.');
+      
+      // Force page reload to show changes
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (error) {
       console.error('Save error:', error);
       onNotification('error', '❌ Error', 'No se pudieron guardar los datos.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!selectedItem || !formData || Object.keys(formData).length === 0) {
+      onNotification('warning', '⚠️ Sin Cambios', 'Selecciona un elemento y modifica los datos para actualizar.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      let table = '';
+      let data = { ...formData };
+
+      switch (activeTab) {
+        case 'products':
+          table = 'products';
+          break;
+        case 'categories':
+          table = 'categories';
+          if (data.name) {
+            data.slug = data.name.toLowerCase().replace(/\s+/g, '-');
+          }
+          break;
+        case 'users':
+          table = 'users';
+          break;
+        case 'faqs':
+          table = 'faqs';
+          break;
+        case 'social':
+          table = 'social_links';
+          break;
+        case 'settings':
+          table = 'site_settings';
+          break;
+      }
+
+      if (activeTab === 'settings') {
+        const { error } = await supabase
+          .from(table)
+          .update({ ...data, updated_at: new Date().toISOString() })
+          .eq('id', siteSettings?.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from(table)
+          .update({ ...data, updated_at: new Date().toISOString() })
+          .eq('id', selectedItem);
+        if (error) throw error;
+      }
+
+      await loadAllData();
+      setSelectedItem('');
+      setFormData({});
+      onNotification('success', '✅ ¡Actualizado!', 'Datos actualizados correctamente.');
+      
+      // Force page reload to show changes
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } catch (error) {
+      console.error('Update error:', error);
+      onNotification('error', '❌ Error', 'No se pudieron actualizar los datos.');
     } finally {
       setLoading(false);
     }
@@ -172,6 +243,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
 
       await loadAllData();
       onNotification('success', '🗑️ Eliminado', 'Elemento eliminado correctamente.');
+      
+      // Force page reload to show changes
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (error) {
       console.error('Delete error:', error);
       onNotification('error', '❌ Error', 'No se pudo eliminar el elemento.');
@@ -520,16 +596,26 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                 <h3 className="text-base md:text-lg font-semibold text-text-primary">
                   {selectedItem || activeTab === 'settings' ? 'Editar' : 'Nuevo'}
                 </h3>
-                {(selectedItem || activeTab === 'settings') && (
+                <div className="flex gap-2">
+                  {(selectedItem || activeTab === 'settings') && (
+                    <button
+                      onClick={handleUpdate}
+                      disabled={loading}
+                      className="btn btn-secondary flex items-center gap-2 text-sm"
+                    >
+                      <Edit className="h-4 w-4" />
+                      Actualizar
+                    </button>
+                  )}
                   <button
                     onClick={handleSave}
                     disabled={loading}
                     className="btn btn-primary flex items-center gap-2 text-sm"
                   >
                     <Save className="h-4 w-4" />
-                    Guardar
+                    {selectedItem || activeTab === 'settings' ? 'Guardar' : 'Crear'}
                   </button>
-                )}
+                </div>
               </div>
 
               {/* Dynamic Forms based on activeTab */}
@@ -834,18 +920,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                         />
                       </div>
                     </>
-                  )}
-
-                  {/* Save button for new items */}
-                  {!selectedItem && activeTab !== 'settings' && activeTab !== 'support' && (
-                    <button
-                      onClick={handleSave}
-                      disabled={loading}
-                      className="w-full btn btn-primary flex items-center justify-center gap-2"
-                    >
-                      <Save className="h-4 w-4" />
-                      Crear
-                    </button>
                   )}
                 </div>
               )}
