@@ -35,8 +35,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
     if (password === 'Delte030725') {
       setIsAuthenticated(true);
       loadAllData();
+      onNotification('success', '✅ Acceso Concedido', 'Bienvenido al panel de administración.');
     } else {
-      onNotification('error', 'Acceso denegado', 'Contraseña incorrecta.');
+      onNotification('error', '❌ Acceso Denegado', 'Contraseña incorrecta.');
       setPassword('');
     }
   };
@@ -72,7 +73,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
       setSiteSettings(settingsRes.data);
     } catch (error) {
       console.error('Error loading admin data:', error);
-      onNotification('error', 'Error', 'No se pudieron cargar los datos.');
+      onNotification('error', '❌ Error', 'No se pudieron cargar los datos.');
     } finally {
       setLoading(false);
     }
@@ -80,7 +81,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
 
   const handleSave = async () => {
     if (!formData || Object.keys(formData).length === 0) {
-      onNotification('warning', 'Sin cambios', 'No hay datos para guardar.');
+      onNotification('warning', '⚠️ Sin Cambios', 'No hay datos para guardar.');
       return;
     }
 
@@ -143,10 +144,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
       await loadAllData();
       setSelectedItem('');
       setFormData({});
-      onNotification('success', '¡Éxito!', 'Datos guardados correctamente.');
+      onNotification('success', '✅ ¡Éxito!', 'Datos guardados correctamente.');
     } catch (error) {
       console.error('Save error:', error);
-      onNotification('error', 'Error', 'No se pudieron guardar los datos.');
+      onNotification('error', '❌ Error', 'No se pudieron guardar los datos.');
     } finally {
       setLoading(false);
     }
@@ -170,10 +171,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
       if (error) throw error;
 
       await loadAllData();
-      onNotification('success', 'Eliminado', 'Elemento eliminado correctamente.');
+      onNotification('success', '🗑️ Eliminado', 'Elemento eliminado correctamente.');
     } catch (error) {
       console.error('Delete error:', error);
-      onNotification('error', 'Error', 'No se pudo eliminar el elemento.');
+      onNotification('error', '❌ Error', 'No se pudo eliminar el elemento.');
     } finally {
       setLoading(false);
     }
@@ -193,10 +194,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
       if (error) throw error;
 
       await loadAllData();
-      onNotification('success', 'Soporte resuelto', 'El ticket de soporte ha sido marcado como resuelto.');
+      onNotification('success', '✅ Soporte Resuelto', 'El ticket de soporte ha sido marcado como resuelto.');
     } catch (error) {
       console.error('Resolve support error:', error);
-      onNotification('error', 'Error', 'No se pudo resolver el ticket de soporte.');
+      onNotification('error', '❌ Error', 'No se pudo resolver el ticket de soporte.');
     } finally {
       setLoading(false);
     }
@@ -255,25 +256,25 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div className="bg-card rounded-2xl max-w-7xl w-full max-h-[95vh] overflow-hidden border-2 border-primary">
-        <div className="flex justify-between items-center p-6 border-b border-border">
-          <h2 className="text-2xl font-bold text-primary">Panel de Administración - Delte Streaming</h2>
+        <div className="flex justify-between items-center p-4 md:p-6 border-b border-border">
+          <h2 className="text-xl md:text-2xl font-bold text-primary">Panel de Administración - Delte Streaming</h2>
           <button onClick={onClose} className="btn btn-secondary p-2">
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="flex h-[calc(95vh-100px)]">
+        <div className="flex flex-col md:flex-row h-[calc(95vh-100px)]">
           {/* Sidebar */}
-          <div className="w-64 bg-bg-secondary border-r border-border p-4">
-            <nav className="space-y-2">
+          <div className="w-full md:w-64 bg-bg-secondary border-b md:border-r md:border-b-0 border-border p-4 overflow-x-auto md:overflow-x-visible">
+            <nav className="flex md:flex-col space-x-2 md:space-x-0 md:space-y-2">
               {[
                 { id: 'products', label: 'Productos', icon: Package },
                 { id: 'categories', label: 'Categorías', icon: Folder },
                 { id: 'users', label: 'Usuarios', icon: Users },
                 { id: 'support', label: 'Soporte', icon: MessageSquare },
                 { id: 'faqs', label: 'FAQs', icon: HelpCircle },
-                { id: 'social', label: 'Redes Sociales', icon: Settings },
-                { id: 'settings', label: 'Configuración', icon: Settings }
+                { id: 'social', label: 'Redes', icon: Settings },
+                { id: 'settings', label: 'Config', icon: Settings }
               ].map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
@@ -282,25 +283,25 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                     setSelectedItem('');
                     setFormData({});
                   }}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  className={`flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2 md:py-3 rounded-lg transition-colors whitespace-nowrap ${
                     activeTab === id
                       ? 'bg-primary text-white'
                       : 'text-text-primary hover:bg-primary/10'
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
-                  {label}
+                  <Icon className="h-4 w-4 md:h-5 md:w-5" />
+                  <span className="text-sm md:text-base">{label}</span>
                 </button>
               ))}
             </nav>
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 flex">
+          <div className="flex-1 flex flex-col md:flex-row">
             {/* List */}
-            <div className="w-1/2 border-r border-border p-4 overflow-y-auto">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-text-primary">
+            <div className="w-full md:w-1/2 border-b md:border-r md:border-b-0 border-border p-4 overflow-y-auto">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
+                <h3 className="text-base md:text-lg font-semibold text-text-primary">
                   {activeTab === 'products' && 'Productos'}
                   {activeTab === 'categories' && 'Categorías'}
                   {activeTab === 'users' && 'Usuarios'}
@@ -315,7 +316,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                       setSelectedItem('');
                       setFormData({});
                     }}
-                    className="btn btn-primary flex items-center gap-2"
+                    className="btn btn-primary flex items-center gap-2 text-sm"
                   >
                     <Plus className="h-4 w-4" />
                     Nuevo
@@ -336,8 +337,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                     onClick={() => loadItemData(product)}
                   >
                     <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-medium text-text-primary">{product.name}</h4>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-text-primary truncate">{product.name}</h4>
                         <p className="text-sm text-text-secondary">S/ {product.price} - Stock: {product.stock}</p>
                       </div>
                       <button
@@ -345,7 +346,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                           e.stopPropagation();
                           handleDelete(product.id);
                         }}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 ml-2"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -365,16 +366,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                     onClick={() => loadItemData(category)}
                   >
                     <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-medium text-text-primary">{category.name}</h4>
-                        <p className="text-sm text-text-secondary">{category.description}</p>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-text-primary truncate">{category.name}</h4>
+                        <p className="text-sm text-text-secondary truncate">{category.description}</p>
                       </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(category.id);
                         }}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 ml-2"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -394,16 +395,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                     onClick={() => loadItemData(user)}
                   >
                     <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-medium text-text-primary">{user.name}</h4>
-                        <p className="text-sm text-text-secondary">@{user.username} - {user.email}</p>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-text-primary truncate">{user.name}</h4>
+                        <p className="text-sm text-text-secondary truncate">@{user.username} - {user.email}</p>
                       </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(user.id);
                         }}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 ml-2"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -417,11 +418,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                     key={ticket.id}
                     className="p-3 rounded-lg border border-border"
                   >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-medium text-text-primary">{ticket.product_name}</h4>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-text-primary truncate">{ticket.product_name}</h4>
                         <p className="text-sm text-text-secondary">
                           Tipo: {ticket.support_type} - Estado: {ticket.status}
+                        </p>
+                        <p className="text-xs text-text-secondary">
+                          ID Compra: {ticket.purchase_id}
                         </p>
                         <p className="text-xs text-text-secondary">
                           {new Date(ticket.created_at).toLocaleDateString()}
@@ -430,7 +434,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                       {ticket.status === 'pending' && (
                         <button
                           onClick={() => handleResolveSupport(ticket.id)}
-                          className="btn btn-primary text-sm"
+                          className="btn btn-primary text-sm whitespace-nowrap"
                         >
                           Resuelto
                         </button>
@@ -451,8 +455,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                     onClick={() => loadItemData(faq)}
                   >
                     <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-medium text-text-primary">{faq.question}</h4>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-text-primary truncate">{faq.question}</h4>
                         <p className="text-sm text-text-secondary line-clamp-2">{faq.answer}</p>
                       </div>
                       <button
@@ -460,7 +464,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                           e.stopPropagation();
                           handleDelete(faq.id);
                         }}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 ml-2"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -480,16 +484,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                     onClick={() => loadItemData(link)}
                   >
                     <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-medium text-text-primary">{link.platform}</h4>
-                        <p className="text-sm text-text-secondary">{link.url}</p>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-text-primary truncate">{link.platform}</h4>
+                        <p className="text-sm text-text-secondary truncate">{link.url}</p>
                       </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(link.id);
                         }}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 ml-2"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -511,16 +515,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
             </div>
 
             {/* Form */}
-            <div className="w-1/2 p-4 overflow-y-auto">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-text-primary">
+            <div className="w-full md:w-1/2 p-4 overflow-y-auto">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
+                <h3 className="text-base md:text-lg font-semibold text-text-primary">
                   {selectedItem || activeTab === 'settings' ? 'Editar' : 'Nuevo'}
                 </h3>
                 {(selectedItem || activeTab === 'settings') && (
                   <button
                     onClick={handleSave}
                     disabled={loading}
-                    className="btn btn-primary flex items-center gap-2"
+                    className="btn btn-primary flex items-center gap-2 text-sm"
                   >
                     <Save className="h-4 w-4" />
                     Guardar
@@ -552,7 +556,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                           className="w-full p-3 border border-border rounded-lg bg-bg-secondary text-text-primary"
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-text-primary mb-2">Precio</label>
                           <input
@@ -644,7 +648,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, onNotification
                           className="w-full p-3 border border-border rounded-lg bg-bg-secondary text-text-primary"
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-text-primary mb-2">Teléfono</label>
                           <input

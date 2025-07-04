@@ -18,7 +18,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   title,
   message,
   autoClose = true,
-  duration = 3000
+  duration = 4000
 }) => {
   useEffect(() => {
     if (isOpen && autoClose) {
@@ -68,15 +68,15 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   const getBackgroundColor = () => {
     switch (type) {
       case 'success':
-        return 'from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20';
+        return 'from-green-50 via-green-100 to-emerald-50 dark:from-green-900/30 dark:via-green-800/20 dark:to-emerald-900/30';
       case 'error':
-        return 'from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20';
+        return 'from-red-50 via-red-100 to-rose-50 dark:from-red-900/30 dark:via-red-800/20 dark:to-rose-900/30';
       case 'warning':
-        return 'from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20';
+        return 'from-yellow-50 via-yellow-100 to-amber-50 dark:from-yellow-900/30 dark:via-yellow-800/20 dark:to-amber-900/30';
       case 'info':
-        return 'from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20';
+        return 'from-blue-50 via-blue-100 to-cyan-50 dark:from-blue-900/30 dark:via-blue-800/20 dark:to-cyan-900/30';
       default:
-        return 'from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20';
+        return 'from-blue-50 via-blue-100 to-cyan-50 dark:from-blue-900/30 dark:via-blue-800/20 dark:to-cyan-900/30';
     }
   };
 
@@ -95,19 +95,34 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
     }
   };
 
+  const getButtonColor = () => {
+    switch (type) {
+      case 'success':
+        return 'bg-green-500 hover:bg-green-600 focus:ring-green-500';
+      case 'error':
+        return 'bg-red-500 hover:bg-red-600 focus:ring-red-500';
+      case 'warning':
+        return 'bg-yellow-500 hover:bg-yellow-600 focus:ring-yellow-500';
+      case 'info':
+        return 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-500';
+      default:
+        return 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-500';
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
-      <div className={`bg-gradient-to-br ${getBackgroundColor()} rounded-2xl max-w-md w-full border-2 ${getBorderColor()} shadow-2xl transform transition-all duration-300 scale-100`}>
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
+      <div className={`bg-gradient-to-br ${getBackgroundColor()} rounded-2xl max-w-md w-full border-2 ${getBorderColor()} shadow-2xl transform transition-all duration-300 scale-100 animate-pulse`}>
         <div className="p-6">
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 animate-bounce">
               {getIcon()}
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-semibold text-text-primary mb-2">
+              <h3 className="text-lg font-bold text-text-primary mb-2 leading-tight">
                 {title}
               </h3>
-              <p className="text-text-secondary leading-relaxed">
+              <p className="text-text-secondary leading-relaxed text-sm">
                 {message}
               </p>
             </div>
@@ -123,7 +138,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             <div className="mt-4">
               <div className="w-full bg-black/10 dark:bg-white/10 rounded-full h-1">
                 <div 
-                  className={`h-1 rounded-full transition-all duration-${duration} ease-linear ${
+                  className={`h-1 rounded-full transition-all ease-linear ${
                     type === 'success' ? 'bg-green-500' :
                     type === 'error' ? 'bg-red-500' :
                     type === 'warning' ? 'bg-yellow-500' :
@@ -137,15 +152,10 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             </div>
           )}
           
-          <div className="flex justify-end mt-4">
+          <div className="flex justify-end mt-6">
             <button
               onClick={onClose}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                type === 'success' ? 'bg-green-500 hover:bg-green-600 text-white' :
-                type === 'error' ? 'bg-red-500 hover:bg-red-600 text-white' :
-                type === 'warning' ? 'bg-yellow-500 hover:bg-yellow-600 text-white' :
-                'bg-blue-500 hover:bg-blue-600 text-white'
-              }`}
+              className={`px-6 py-2 rounded-lg font-medium transition-all duration-200 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-105 ${getButtonColor()}`}
             >
               Entendido
             </button>

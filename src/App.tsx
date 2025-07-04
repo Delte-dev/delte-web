@@ -10,7 +10,6 @@ import ProductGrid from './components/store/ProductGrid';
 import Footer from './components/store/Footer';
 import ThemeToggle from './components/ThemeToggle';
 import LoginModal from './components/store/LoginModal';
-import RegisterModal from './components/store/RegisterModal';
 import AdminPanel from './components/store/AdminPanel';
 import SupportPanel from './components/store/SupportPanel';
 import LoadingSpinner from './components/LoadingSpinner';
@@ -37,7 +36,6 @@ function App() {
 
   // Modal states
   const [showLogin, setShowLogin] = useState(false);
-  const [showRegister, setShowRegister] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [showSupportPanel, setShowSupportPanel] = useState(false);
   
@@ -98,18 +96,13 @@ function App() {
   const handleLogin = (user: User) => {
     setCurrentUser(user);
     setShowLogin(false);
-    showNotification('success', '¡Bienvenido!', `Hola ${user.name}, has iniciado sesión correctamente.`);
+    showNotification('success', '🎉 ¡Bienvenido!', `Hola ${user.name}, has iniciado sesión correctamente.`);
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
     setShowSupportPanel(false);
-    showNotification('info', 'Sesión cerrada', 'Has cerrado sesión correctamente.');
-  };
-
-  const handleRegisterSuccess = () => {
-    setShowRegister(false);
-    showNotification('success', '¡Registro exitoso!', 'Tu cuenta ha sido creada. Ahora puedes iniciar sesión.');
+    showNotification('info', '👋 Sesión Cerrada', 'Has cerrado sesión correctamente.');
   };
 
   if (loading) {
@@ -137,7 +130,6 @@ function App() {
         siteSettings={siteSettings}
         currentUser={currentUser}
         onLogin={() => setShowLogin(true)}
-        onRegister={() => setShowRegister(true)}
         onLogout={handleLogout}
         onShowSupport={() => setShowSupportPanel(true)}
       />
@@ -167,21 +159,6 @@ function App() {
         isOpen={showLogin}
         onClose={() => setShowLogin(false)}
         onLogin={handleLogin}
-        onRegister={() => {
-          setShowLogin(false);
-          setShowRegister(true);
-        }}
-        onNotification={showNotification}
-      />
-      
-      <RegisterModal
-        isOpen={showRegister}
-        onClose={() => setShowRegister(false)}
-        onSuccess={handleRegisterSuccess}
-        onLogin={() => {
-          setShowRegister(false);
-          setShowLogin(true);
-        }}
         onNotification={showNotification}
       />
 

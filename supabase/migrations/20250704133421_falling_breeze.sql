@@ -1,11 +1,11 @@
 /*
-  # Delte Streaming Store Database Setup
+  # Delte Streaming Store Database Setup - Complete
 
   1. New Tables
     - `categories` - Product categories
     - `products` - Streaming products (Netflix, Prime Video, Crunchyroll)
     - `users` - Customer accounts
-    - `purchases` - Purchase history
+    - `purchases` - Purchase history with unique IDs
     - `support_tickets` - Customer support requests
     - `faqs` - Frequently asked questions
     - `social_links` - Footer social media links
@@ -19,7 +19,8 @@
     - Sample products with stock
     - Categories
     - FAQs
-    - Social links and site settings
+    - Updated social links
+    - Site settings
 */
 
 -- Drop existing tables if they exist
@@ -72,9 +73,9 @@ CREATE TABLE public.users (
     updated_at timestamptz DEFAULT now() NOT NULL
 );
 
--- Create purchases table
+-- Create purchases table with unique purchase IDs
 CREATE TABLE public.purchases (
-    id text PRIMARY KEY,
+    id text PRIMARY KEY, -- Unique purchase ID like PUR-ABC123-XYZ89
     user_id text REFERENCES public.users(id) ON DELETE CASCADE,
     product_id text REFERENCES public.products(id),
     product_name text NOT NULL,
@@ -264,12 +265,12 @@ INSERT INTO public.faqs (id, question, answer, order_index) VALUES
 ('faq-4', '¿Ofrecen soporte técnico?', 'Sí, ofrecemos soporte técnico completo durante toda la vigencia del servicio. Puedes contactarnos a través del panel de soporte en tu cuenta.', 4),
 ('faq-5', '¿Puedo cambiar mi producto después de comprarlo?', 'Los cambios están sujetos a disponibilidad y deben solicitarse dentro de las primeras 24 horas después de la compra.', 5);
 
--- Insert social links
+-- Insert updated social links
 INSERT INTO public.social_links (id, platform, url, icon, order_index) VALUES
-('social-1', 'TikTok', 'https://tiktok.com/@deltestreaming', 'fab fa-tiktok', 1),
-('social-2', 'Telegram', 'https://t.me/deltestreaming', 'fab fa-telegram', 2),
+('social-1', 'Facebook', 'https://www.facebook.com/profile.php?id=61576208550671', 'fab fa-facebook', 1),
+('social-2', 'Telegram', 'https://t.me/DelteStreaming', 'fab fa-telegram', 2),
 ('social-3', 'WhatsApp', 'https://wa.me/51936992107', 'fab fa-whatsapp', 3),
-('social-4', 'Facebook', 'https://facebook.com/deltestreaming', 'fab fa-facebook', 4);
+('social-4', 'TikTok', 'https://www.tiktok.com/@deltestreaming', 'fab fa-tiktok', 4);
 
 -- Insert site settings
 INSERT INTO public.site_settings (id, site_title, site_subtitle, contact_phone, whatsapp_url, footer_text, developer_text) VALUES
@@ -283,18 +284,21 @@ INSERT INTO public.site_settings (id, site_title, site_subtitle, contact_phone, 
   'Desarrollado por: CyberLink Express 360 Sure'
 );
 
--- Function to update product stock after purchase
-CREATE OR REPLACE FUNCTION decrease_product_stock()
-RETURNS TRIGGER AS $$
-BEGIN
-    UPDATE public.products 
-    SET stock = stock - 1 
-    WHERE id = NEW.product_id AND stock > 0;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+-- Function to update product stock after purchase (removed automatic stock decrease)
+-- Stock will be managed manually through admin panel to prevent race conditions
 
--- Create trigger for automatic stock decrease
-CREATE TRIGGER decrease_stock_trigger
-    AFTER INSERT ON public.purchases
-    FOR EACH ROW EXECUTE FUNCTION decrease_product_stock();
+-- Create indexes for better performance
+CREATE INDEX idx_products_category_id ON public.products(category_id);
+CREATE INDEX idx_products_is_active ON public.products(is_active);
+CREATE INDEX idx_purchases_user_id ON public.purchases(user_id);
+CREATE INDEX idx_purchases_product_id ON public.purchases(product_id);
+CREATE INDEX idx_support_tickets_user_id ON public.support_tickets(user_id);
+CREATE INDEX idx_support_tickets_purchase_id ON public.support_tickets(purchase_id);
+CREATE INDEX idx_support_tickets_status ON public.support_tickets(status);
+CREATE INDEX idx_users_username ON public.users(username);
+CREATE INDEX idx_users_email ON public.users(email);
+CREATE INDEX idx_users_is_active ON public.users(is_active);
+CREATE INDEX idx_faqs_is_active ON public.faqs(is_active);
+CREATE INDEX idx_faqs_order_index ON public.faqs(order_index);
+CREATE INDEX idx_social_links_is_active ON public.social_links(is_active);
+CREATE INDEX idx_social_links_order_index ON public.social_links(order_index);

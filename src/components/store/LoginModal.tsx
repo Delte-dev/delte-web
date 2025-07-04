@@ -7,7 +7,6 @@ interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onLogin: (user: UserType) => void;
-  onRegister: () => void;
   onNotification: (type: 'success' | 'error' | 'warning' | 'info', title: string, message: string) => void;
 }
 
@@ -15,7 +14,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
   isOpen,
   onClose,
   onLogin,
-  onRegister,
   onNotification
 }) => {
   const [formData, setFormData] = useState({
@@ -29,7 +27,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
     e.preventDefault();
     
     if (!formData.username || !formData.password) {
-      onNotification('warning', 'Campos requeridos', 'Por favor completa todos los campos.');
+      onNotification('warning', '⚠️ Campos Requeridos', 'Por favor completa todos los campos.');
       return;
     }
 
@@ -49,7 +47,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
       }
 
       if (!users || users.length === 0) {
-        onNotification('error', 'Usuario no encontrado', 'El usuario no existe o está inactivo.');
+        onNotification('error', '❌ Usuario No Encontrado', 'El usuario no existe o está inactivo.');
         return;
       }
 
@@ -57,7 +55,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
       
       // Simple password check (in production, use bcrypt or similar)
       if (user.password_hash !== formData.password) {
-        onNotification('error', 'Contraseña incorrecta', 'La contraseña ingresada no es correcta.');
+        onNotification('error', '❌ Contraseña Incorrecta', 'La contraseña ingresada no es correcta.');
         return;
       }
 
@@ -65,7 +63,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
       setFormData({ username: '', password: '' });
     } catch (error) {
       console.error('Login error:', error);
-      onNotification('error', 'Error de conexión', 'No se pudo conectar con el servidor.');
+      onNotification('error', '❌ Error de Conexión', 'No se pudo conectar con el servidor.');
     } finally {
       setLoading(false);
     }
@@ -76,9 +74,9 @@ const LoginModal: React.FC<LoginModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
       <div className="bg-card rounded-2xl max-w-md w-full border-2 border-primary shadow-2xl">
-        <div className="flex justify-between items-center p-6 border-b border-border">
-          <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
-            <User className="h-6 w-6" />
+        <div className="flex justify-between items-center p-4 md:p-6 border-b border-border">
+          <h2 className="text-xl md:text-2xl font-bold text-primary flex items-center gap-2">
+            <User className="h-5 w-5 md:h-6 md:w-6" />
             Iniciar Sesión
           </h2>
           <button onClick={onClose} className="btn btn-secondary p-2">
@@ -86,7 +84,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 md:p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-text-primary mb-2">
               Usuario:
@@ -145,19 +143,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
               </>
             )}
           </button>
-          
-          <div className="text-center pt-4 border-t border-border">
-            <p className="text-text-secondary">
-              ¿No tienes cuenta?{' '}
-              <button
-                type="button"
-                onClick={onRegister}
-                className="text-primary hover:underline font-medium"
-              >
-                Regístrate aquí
-              </button>
-            </p>
-          </div>
         </form>
       </div>
     </div>
